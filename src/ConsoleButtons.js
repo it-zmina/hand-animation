@@ -1,4 +1,4 @@
-import {Component, System, TagComponent, Types, World} from "three/examples/jsm/libs/ecsy.module";
+import {Component, System, TagComponent, Types} from "three/examples/jsm/libs/ecsy.module";
 
 import buttonPress from "../assets/sounds/button-press.ogg"
 import buttonRelease from "../assets/sounds/button-release.ogg"
@@ -6,8 +6,10 @@ import * as THREE from "three";
 import {createText} from "three/examples/jsm/webxr/Text2D";
 
 const POINTING_JOINT = 'index-finger-tip'
+// Buttons
 const ORANGE_BUTTON = 'orangeButton'
 const PINK_BUTTON = 'pinkButton'
+const RESET_BUTTON = 'resetButton'
 const EXIT_BUTTON = 'exitButton'
 
 class Object3D extends Component { }
@@ -424,6 +426,7 @@ class ConsoleButtons {
 		obEntity.addComponent( Button, { action: this.orangeButtonAction, surfaceY: 0.05, fullPressDistance: 0.02 } );
 
 		const pbEntity = this.world.createEntity();
+		pbEntity.name = PINK_BUTTON
 		pbEntity.addComponent( Pressable );
 		pbEntity.addComponent( Object3D, { object: pinkButton } );
 		this.pinkButton = function () {
@@ -435,6 +438,7 @@ class ConsoleButtons {
 		pbEntity.addComponent( Button, { action: this.pinkButton, surfaceY: 0.05, fullPressDistance: 0.02 } );
 
 		const rbEntity = this.world.createEntity();
+		rbEntity.name = RESET_BUTTON
 		rbEntity.addComponent( Pressable );
 		rbEntity.addComponent( Object3D, { object: resetButton } );
 		const rbAction = function () {
@@ -446,6 +450,7 @@ class ConsoleButtons {
 		rbEntity.addComponent( Button, { action: rbAction, surfaceY: 0.05, fullPressDistance: 0.02 } );
 
 		const ebEntity = this.world.createEntity();
+		ebEntity.name = EXIT_BUTTON
 		ebEntity.addComponent( Pressable );
 		ebEntity.addComponent( Object3D, { object: exitButton } );
 		const ebAction = function () {
@@ -479,4 +484,4 @@ class ConsoleButtons {
 	}
 }
 
-export {ConsoleButtons, EXIT_BUTTON, ORANGE_BUTTON, PINK_BUTTON}
+export {ConsoleButtons, EXIT_BUTTON, ORANGE_BUTTON, PINK_BUTTON, RESET_BUTTON}

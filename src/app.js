@@ -3,12 +3,13 @@ import {VRButton} from "three/examples/jsm/webxr/VRButton"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {XRControllerModelFactory} from "three/examples/jsm/webxr/XRControllerModelFactory";
 import {XRHandModelFactory} from "three/examples/jsm/webxr/XRHandModelFactory";
-
-import blimp from "../assets/Blimp.glb"
 import {loadAsset} from "./utils/loaders";
 import {OculusHandModel} from "three/examples/jsm/webxr/OculusHandModel";
-import {ConsoleButtons, ORANGE_BUTTON} from "./ConsoleButtons";
+import {ConsoleButtons, ORANGE_BUTTON, PINK_BUTTON, RESET_BUTTON} from "./ConsoleButtons";
 import {World} from "three/examples/jsm/libs/ecsy.module";
+
+import blimp from "../assets/Blimp.glb"
+import knight from "../assets/knight2.glb"
 
 class App {
 
@@ -91,9 +92,17 @@ class App {
 				renderer: this.renderer,
 				camera: this.camera
 			})
+
 		consoleButtons.setAction(ORANGE_BUTTON, () => {
-			self.blimp.translateY(.1)
-			console.debug('Orange button pressed')
+			self.action = 'Walk'
+		})
+
+		consoleButtons.setAction(PINK_BUTTON, () => {
+			self.action = 'Dance'
+		})
+
+		consoleButtons.setAction(RESET_BUTTON, () => {
+			self.action = 'IDLE'
 		})
 	}
 
@@ -103,6 +112,7 @@ class App {
         const material = new THREE.MeshStandardMaterial({color: 0xFF0000})
         this.mesh = new THREE.Mesh(geometry, material)
         this.scene.add(this.mesh)
+		this.mesh.position.set(-1.5, .5, -1)
 
         const geometrySphere = new THREE.SphereGeometry(.7, 32, 16)
         const materialSphere = new THREE.MeshBasicMaterial({color: 0xffff00})
@@ -111,13 +121,59 @@ class App {
 
         sphere.position.set(1.5, 0, -1)
 
-        loadAsset(blimp, -.5, .5, -1, gltfScene => {
+        loadAsset(blimp, gltf => {
+			const gltfScene = gltf.scene
+			gltfScene.position.set(-.5, .5, -1)
             const scale = 5
 			gltfScene.scale.set(scale, scale, scale)
             self.blimp = gltfScene
 			self.scene.add(gltfScene)
         })
+
+        loadAsset(knight, gltf => {
+			const gltfScene = gltf.scene.children[0]
+			gltfScene.position.set(0, 0, -1)
+
+            self.knight = gltfScene
+			const scale = 0.01;
+			self.knight.scale.set(scale, scale, scale);
+
+			self.scene.add(gltfScene)
+
+			// animations
+			self.animations = {};
+
+			gltf.animations.forEach( (anim)=>{
+				self.animations[anim.name] = anim;
+			})
+
+			self.mixer = new THREE.AnimationMixer(self.knight)
+			self.action = "Idle";
+        })
     }
+
+	set action(name){
+		if (this.actionName === name) return;
+
+		const clip = this.animations[name];
+
+		if (clip !== undefined) {
+			const action = this.mixer.clipAction(clip);
+
+			if (name === 'Die') {
+				action.loop = THREE.LoopOnce;
+				action.clampWhenFinished = true;
+			}
+
+			this.actionName = name;
+			if (this.curAction) this.curAction.crossFadeTo(action, 0.5);
+
+			action.enabled = true;
+			action.play();
+
+			this.curAction = action;
+		}
+	}
 
     setupVR() {
         this.renderer.xr.enabled = true
@@ -201,19 +257,19 @@ class App {
         const self = this;
 
         this.gripRight.addEventListener('selectstart', () => {
-            // self.blimp.rotateY(90)
+			self.action = 'Idle'
         })
 
         this.gripRight.addEventListener('squeezestart', () => {
-            self.blimp.translateY(.1)
+			self.action = 'Walk'
         })
 
         this.gripLeft.addEventListener('selectstart', () => {
-            // self.blimp.rotateY(-90)
+			self.action = 'Dance'
         })
 
         this.gripLeft.addEventListener('squeezestart', () => {
-            self.blimp.translateY(-.1)
+			self.action = 'Dying'
         })
 
         this.handRight.addEventListener('pinchend', (evt) => {
@@ -271,6 +327,12 @@ class App {
         //   this.blimp.rotateY(0.1 * xAxis)
         //   this.blimp.translateY(.02 * yAxis)
         // }
+
+		// for animation
+		if (this.mixer) {
+			this.mixer.update(delta)
+		}
+
         this.renderer.render(this.scene, this.camera)
     }
 }
