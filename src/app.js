@@ -9,7 +9,7 @@ import {ConsoleButtons, ORANGE_BUTTON, PINK_BUTTON, RESET_BUTTON} from "./Consol
 import {World} from "three/examples/jsm/libs/ecsy.module";
 
 import blimp from "../assets/Blimp.glb"
-import knight from "../assets/knight2.glb"
+import knight from "../assets/complete/knight.glb"
 
 class App {
 
@@ -102,7 +102,7 @@ class App {
 		})
 
 		consoleButtons.setAction(RESET_BUTTON, () => {
-			self.action = 'IDLE'
+			self.action = 'Idle'
 		})
 	}
 
@@ -257,10 +257,12 @@ class App {
         const self = this;
 
         this.gripRight.addEventListener('selectstart', () => {
+			self.blimp.translateX(.2)
 			self.action = 'Idle'
         })
 
         this.gripRight.addEventListener('squeezestart', () => {
+			self.blimp.translateX(-.2)
 			self.action = 'Walk'
         })
 
@@ -272,21 +274,21 @@ class App {
 			self.action = 'Dying'
         })
 
-        this.handRight.addEventListener('pinchend', (evt) => {
-            self.cycleHandModel.bind(self, evt.handedness).call()
-        })
-
-		this.handRight.addEventListener('pinchend', evt => {
-			self.changeAngle.bind(self, evt.handedness).call();
-		})
-
-        this.handLeft.addEventListener('pinchend', (evt) => {
-			self.cycleHandModel.bind(self, evt.handedness).call()
-        })
-
-		this.handLeft.addEventListener('pinchend', evt => {
-			self.changeAngle.bind(self, evt.handedness).call();
-		})
+        // this.handRight.addEventListener('pinchend', (evt) => {
+        //     self.cycleHandModel.bind(self, evt.handedness).call()
+        // })
+		//
+		// this.handRight.addEventListener('pinchend', evt => {
+		// 	self.changeAngle.bind(self, evt.handedness).call();
+		// })
+		//
+        // this.handLeft.addEventListener('pinchend', (evt) => {
+		// 	self.cycleHandModel.bind(self, evt.handedness).call()
+        // })
+		//
+		// this.handLeft.addEventListener('pinchend', evt => {
+		// 	self.changeAngle.bind(self, evt.handedness).call();
+		// })
 
 	}
 
