@@ -31,6 +31,7 @@ NOTE: When dowload animation check without skin option
 ![](docs/export-include.png)
 ![](docs/export-transform.png)
 ![](docs/export-animation.png)
+![](docs/add-textures.png)
 
 ## Task -- Play animation clip
 1. Create AnimationMixer object
