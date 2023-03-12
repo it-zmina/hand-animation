@@ -9,7 +9,10 @@ import {ConsoleButtons, ORANGE_BUTTON, PINK_BUTTON, RESET_BUTTON} from "./Consol
 import {World} from "three/examples/jsm/libs/ecsy.module";
 
 import blimp from "../assets/Blimp.glb"
-import knight from "../assets/complete/knight.glb"
+// import knight from "../assets/complete/knight.glb"
+// import knight from "../assets/dandce.glb"
+// import knight from "../assets/complete/with_skin_two_action.glb"
+import knight from "../assets/knight-one-branch.glb"
 
 class App {
 
@@ -148,7 +151,7 @@ class App {
 			})
 
 			self.mixer = new THREE.AnimationMixer(self.knight)
-			self.action = "Idle";
+			self.action = "Dance";
         })
     }
 
@@ -166,7 +169,9 @@ class App {
 			}
 
 			this.actionName = name;
-			if (this.curAction) this.curAction.crossFadeTo(action, 0.5);
+			if (this.curAction) {
+				this.curAction.crossFadeTo(action, 0.2);
+			}
 
 			action.enabled = true;
 			action.play();
@@ -263,15 +268,15 @@ class App {
 
         this.gripRight.addEventListener('squeezestart', () => {
 			self.blimp.translateX(-.2)
-			self.action = 'Walk'
-        })
-
-        this.gripLeft.addEventListener('selectstart', () => {
 			self.action = 'Dance'
         })
 
+        this.gripLeft.addEventListener('selectstart', () => {
+			self.action = 'Die'
+        })
+
         this.gripLeft.addEventListener('squeezestart', () => {
-			self.action = 'Dying'
+			self.action = 'Walk'
         })
 
         // this.handRight.addEventListener('pinchend', (evt) => {
